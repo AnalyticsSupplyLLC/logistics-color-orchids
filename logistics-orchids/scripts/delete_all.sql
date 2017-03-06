@@ -1,0 +1,1 @@
+delete from logistics.logistics_stop;

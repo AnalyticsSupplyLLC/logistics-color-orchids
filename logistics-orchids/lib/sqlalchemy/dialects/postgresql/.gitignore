@@ -1,0 +1,14 @@
+/__init__.pyc
+/array.pyc
+/base.pyc
+/dml.pyc
+/ext.pyc
+/hstore.pyc
+/json.pyc
+/pg8000.pyc
+/psycopg2.pyc
+/psycopg2cffi.pyc
+/pygresql.pyc
+/pypostgresql.pyc
+/ranges.pyc
+/zxjdbc.pyc

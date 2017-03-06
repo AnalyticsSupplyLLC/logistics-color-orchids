@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+encoding//application/views/admin/add_db_entry.py=utf-8
+encoding//application/views/admin/admin_delete_route.py=utf-8
+encoding//application/views/admin/admin_edit_route.py=utf-8
+encoding//application/views/admin/admin_list_routes.py=utf-8
+encoding//application/views/admin/admin_secret.py=utf-8
+encoding//lib/flask/__init__.py=utf-8
+encoding//lib/flask/app.py=utf-8
+encoding//lib/flask/views.py=utf-8
+encoding//lib/flask_sqlalchemy/__init__.py=utf-8
+encoding//lib/flask_wtf/csrf.py=utf-8
+encoding//lib/flask_wtf/form.py=utf-8
+encoding//tests/tests.py=utf-8

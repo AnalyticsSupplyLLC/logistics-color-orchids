@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 60%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h2 id="">Route {{ route.key.id() }}</h2>
+    {% if route.route_date_start == route.route_date_end %}
+       <h4> Date: {{ route.route_date_start }}</h4>
+    {% else %}
+       <h4> Date: {{ route.route_date_start }} to {{ route.route_date_end }}</h4>
+    {% endif %}
+    <h5> Operator: {{ route.operator_name }}</h5>
+    <div>&nbsp;</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class='h5'>
+                <th>Operator Pay</th>
+                <th>Hotel Exenses</th>
+                <th>Fuel Expenses</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ route.operator_pay }}</td>
+                <td>{{ route.hotel_expenses }}</td>
+                <td>{{ route.fuel_expenses }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr class='h5'>
+                <th>Fuel Gallons</th>
+                <th>Total Miles</th>
+                <th>Total Hours</th>             
+                <th>Added by</th>
+                <th>Added on</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ route.fuel_gallons }}</td>
+                <td>{{ route.total_miles }}</td>
+                <td>{{ route.total_hours }}</td>
+                <td>{{ route.added_by }}</td>
+                <td class="nowrap">{{ route.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td class="nowrap">{{ route.up_timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>
+       <table><tr><td>
+       <form method="get" action="{{ url_for('edit_route', route_id = route.key.id()) }}">
+       		 <button class="btn">Edit</button>
+       </form></td><td>
+       <form method="post" action="{{ url_for('delete_route', route_id=route.key.id()) }}">
+             <button class="btn">Delete</button>
+       </form></td></tr></table>
+  
+    <h2 id="">All Stops</h2>
+    <div>&nbsp;</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Stop Name</th>
+                <th>Ship To</th>
+                <th>Zip Code</th>
+                <th>Distance</th>
+                <th>Percent Load</th>
+                <th>Pallets</th>
+                <th>Carts</th>
+                <th>Returned Carts</th>
+                <th>Revenue</th>
+                <th>Added On</th>
+                <th>Updated On</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stop in stops %}
+            {% set stop_id = stop.key.id() %}
+            <tr>
+                <td>{{ stop.stop_name }}</td>
+                <td>{{ stop.stop_ship_to }}</td>
+                <td>{{ stop.stop_zip }}</td>
+                <td>{{ stop.stop_dist }}</td>
+                <td>{{ stop.stop_load }}</td>
+                <td>{{ stop.stop_pallets }}</td>
+                <td>{{ stop.stop_carts }}</td>
+                <td>{{ stop.stop_ret_carts }}</td>
+                <td>{{ stop.customer_cost }}</td>
+                <td class="nowrap">{{ stop.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td class="nowrap">{{ stop.up_timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
+                <td> <form method="get" action="{{ url_for('edit_stop', route_id=route.key.id(), stop_id=stop_id) }}">
+                        <button class="btn">Edit</button>
+                    </form></td>
+                <td> <form method="post" action="{{ url_for('delete_stop', route_id=route.key.id(), stop_id=stop_id) }}">
+                        <button class="btn">Delete</button>
+                    </form></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="12">No stops yet</td></tr>
+            {% endfor %}
+        </tbody>
+     </table>
+     <p>
+        <a class="btn btn-primary" onclick="show_modal('#new-stop-modal')">
+            <i class="icon-plus-sign icon-white"></i>
+            New Stop
+        </a>
+    </p>
+
+
+{% endblock content %}
+
+{% block footer %}
+    {% include 'new_stop.html' %} {# pull in new_stop form (modal dialog) #}
+{% endblock footer %}
+
+{% block tail_script %}
+    {% if show_form != "no" %}
+        <script>window.onload = function() {
+        	show_modal('{{ show_form }}');
+        };</script>
+    {% endif %}
+    <script>
+    function show_modal(m_id) {
+    	get_customers();
+        $(m_id).modal('show');
+    }
+    
+    var customers = [];
+    var locations = {};
+    var cur_location = {};
+    
+    function get_customers(){
+    	if (customers.length == 0){
+    		load_customers(switch_cust);
+    		
+    	}else{
+    		switch_cust();
+    	}
+    }
+    
+    function switch_cust(){
+    	switch_to_select('stop_name', customers);
+    	if (isEmpty(locations)){
+    		init_locations(customers,locations,0 ,switch_loc);
+    	}
+    	$( "#stop_name" ).change(function() {
+			var cust_id = $( "#stop_name" ).val();
+			if (locations[cust_id].length == 0){
+				get_locations(cust_id,locations,switch_loc);
+			}else{
+				switch_loc(cust_id);
+				
+			}
+			});
+    }
+    function set_cur_locations(locations, cust_id){
+    	var arrayLength = locations[cust_id].length;
+    	
+    	for (var i = 0; i < arrayLength; i++){
+    		cur_location[locations[cust_id][i]['value']] = locations[cust_id][i];
+    	}
+    }
+    function switch_loc(cust_id){
+    	switch_to_select('stop_ship_to', locations[cust_id]);
+    	set_cur_locations(locations,cust_id);
+    	var loc_id = $('#stop_ship_to').val();
+    	$('#stop_zip').val(cur_location[loc_id]['zipcode']);
+    	$('#stop_dist').val(cur_location[loc_id]['distance']);
+        $("#stop_ship_to").change(function(){
+        	var loc_id = $('#stop_ship_to').val();
+        	$('#stop_zip').val(cur_location[loc_id]['zipcode']);
+        	$('#stop_dist').val(cur_location[loc_id]['distance']);
+        })
+    }
+    </script>
+{% endblock tail_script %}

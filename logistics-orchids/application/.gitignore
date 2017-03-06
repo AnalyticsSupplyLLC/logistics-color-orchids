@@ -1,0 +1,8 @@
+/__init__.pyc
+/decorators.pyc
+/forms.pyc
+/models.pyc
+/secret_keys.pyc
+/settings.pyc
+/urls.pyc
+/secret_keys.py

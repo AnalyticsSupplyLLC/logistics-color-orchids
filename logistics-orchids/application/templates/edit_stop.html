@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% import 'macros.html' as frm_hlp %}
+{% block content %}
+    
+    <h3>Edit Stop</h3>
+    {{ frm_hlp.render_form(form, form_id='edit-stop',action_url=url_for('edit_stop',route_id=route.key.id(),stop_id=stop.key.id()), action_text='Save Changes',class_='well') }}
+{% endblock content %}
+{% block tail_script %}
+    <script>
+       window.onload = function() {
+    	get_customers();
+       };
+        var selected_name = '{{ stop.stop_name }}';
+        var selected_stop = '{{ stop.stop_ship_to }}';
+        var customers = [];
+        var locations = {};
+        var cur_location = {};
+        
+        function get_customers(){
+        	if (customers.length == 0){
+        		load_customers(switch_cust);
+        		
+        	}else{
+        		switch_cust();
+        	}
+        }
+        
+        function get_cust_index(){
+        	var arrayLength = customers.length;
+        	var idx = 0;
+        	for (var i=0; i < arrayLength; i++){
+        		if(selected_name == customers[i]['display']){
+        			idx = i;
+        		}
+        	}
+        	return idx;
+        }
+        
+        function get_loc_index(cust_idx){
+        	var arrayLength = locations[customers[cust_idx]['value']].length;
+        	var idx = 0;
+        	for (var i=0; i < arrayLength; i++){
+        		if(selected_stop == locations[customers[cust_idx]['value']][i]['display']){
+        			idx = i;
+        		}
+        	}
+        	return idx;
+        }
+        
+        function switch_cust(){
+        	switch_to_select('stop_name', customers);
+            var init_idx = get_cust_index();
+            $('#stop_name').val(customers[init_idx]['value']);
+        	if (isEmpty(locations)){
+        		init_locations(customers,locations, init_idx, switch_loc_first);
+        	}
+        	$( "#stop_name" ).change(function() {
+    			var cust_id = $( "#stop_name" ).val();
+    			if (locations[cust_id].length == 0){
+    				get_locations(cust_id,locations,switch_loc);
+    			}else{
+    				switch_loc(cust_id);
+    				
+    			}
+    			});
+        }
+        function set_cur_locations(locations, cust_id){
+        	var arrayLength = locations[cust_id].length;
+        	
+        	for (var i = 0; i < arrayLength; i++){
+        		cur_location[locations[cust_id][i]['value']] = locations[cust_id][i];
+        	}
+        }
+        
+        function switch_loc_first(cust_id){
+        	var init_idx = get_cust_index();
+        	cust_id = customers[init_idx]['value'];
+        	switch_to_select('stop_ship_to', locations[cust_id]);
+        	set_cur_locations(locations,cust_id);
+        	var val = locations[cust_id][get_loc_index(init_idx)]['value'];
+    		$('#stop_ship_to').val(val);
+    		$("#stop_ship_to").change(function(){
+            	var loc_id = $('#stop_ship_to').val();
+            	$('#stop_zip').val(cur_location[loc_id]['zipcode']);
+            	$('#stop_dist').val(cur_location[loc_id]['distance']);
+            })
+        }
+        
+        function switch_loc(cust_id){
+        	switch_to_select('stop_ship_to', locations[cust_id]);
+        	set_cur_locations(locations,cust_id);
+        	var loc_id = $('#stop_ship_to').val();
+        	$('#stop_zip').val(cur_location[loc_id]['zipcode']);
+        	$('#stop_dist').val(cur_location[loc_id]['distance']);
+            $("#stop_ship_to").change(function(){
+            	var loc_id = $('#stop_ship_to').val();
+            	$('#stop_zip').val(cur_location[loc_id]['zipcode']);
+            	$('#stop_dist').val(cur_location[loc_id]['distance']);
+            })
+        }
+    </script>
+{% endblock tail_script %}

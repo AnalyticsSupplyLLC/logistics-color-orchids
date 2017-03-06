@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% import 'macros.html' as frm_hlp %}
+{% block content %}
+    
+    <h3>Add DB Entry</h3>
+    {{ frm_hlp.render_form(form, form_id='add-db-entry',action_url=url_for('db_entry'), action_text='Add Entry',class_='well') }}
+{% endblock content %}
+{% block tail_script %}
+{% endblock tail_script %}
