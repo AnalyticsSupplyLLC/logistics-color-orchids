@@ -18,16 +18,18 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr class='h5'>
+                <th>Route ID</th>
                 <th>Operator Pay</th>
-                <th>Hotel Exenses</th>
-                <th>Fuel Expenses</th>
+                <th>Misc Expenses</th>
+                <th>Total Miles</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td>{{ route.route_id }}</td>
                 <td>{{ route.operator_pay }}</td>
-                <td>{{ route.hotel_expenses }}</td>
-                <td>{{ route.fuel_expenses }}</td>
+                <td>{{ route.misc_expenses }}</td>
+                <td>{{ route.total_miles }}</td>
             </tr>
         </tbody>
     </table>
@@ -35,9 +37,8 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr class='h5'>
-                <th>Fuel Gallons</th>
-                <th>Total Miles</th>
-                <th>Total Hours</th>             
+                <!-- <th>Fuel Gallons</th> -->
+                <!-- <th>Total Hours</th> -->             
                 <th>Added by</th>
                 <th>Added on</th>
                 <th>Last Updated</th>
@@ -45,9 +46,9 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ route.fuel_gallons }}</td>
+               <!--  <td>{{ route.fuel_gallons }}</td>
                 <td>{{ route.total_miles }}</td>
-                <td>{{ route.total_hours }}</td>
+                <td>{{ route.total_hours }}</td> -->
                 <td>{{ route.added_by }}</td>
                 <td class="nowrap">{{ route.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
                 <td class="nowrap">{{ route.up_timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
@@ -75,8 +76,8 @@
                 <th>Percent Load</th>
                 <th>Pallets</th>
                 <th>Carts</th>
-                <th>Returned Carts</th>
                 <th>Revenue</th>
+                <th>Sales Order #</th>
                 <th>Added On</th>
                 <th>Updated On</th>
                 <th>&nbsp;</th>
@@ -94,8 +95,8 @@
                 <td>{{ stop.stop_load }}</td>
                 <td>{{ stop.stop_pallets }}</td>
                 <td>{{ stop.stop_carts }}</td>
-                <td>{{ stop.stop_ret_carts }}</td>
                 <td>{{ stop.customer_cost }}</td>
+                <td>{{ stop.invoice_num }}</td>
                 <td class="nowrap">{{ stop.timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
                 <td class="nowrap">{{ stop.up_timestamp.strftime('%b %d, %Y %I:%M %p') }}</td>
                 <td> <form method="get" action="{{ url_for('edit_stop', route_id=route.key.id(), stop_id=stop_id) }}">

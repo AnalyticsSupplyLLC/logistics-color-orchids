@@ -30,9 +30,11 @@ class AdminListExamples(View):
                 operator_pay=form.operator_pay.data,
                 hotel_expenses=form.hotel_expenses.data,
                 fuel_expenses=form.fuel_expenses.data,
-                fuel_gallons=form.fuel_gallons.data,
+                misc_expenses=form.misc_expenses.data,
+                route_id=form.route_id.data,
+                #fuel_gallons=form.fuel_gallons.data,
                 total_miles=form.total_miles.data,
-                total_hours=form.total_hours.data,
+                #total_hours=form.total_hours.data,
                 added_by=users.get_current_user(),
                 timestamp=datetime.now(),
                 up_timestamp=datetime.now()

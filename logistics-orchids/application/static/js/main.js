@@ -15,6 +15,10 @@ var Utils = {
     }
 };
 
+$(document).ready(function() {
+    $(".dropdown-toggle").dropdown();
+});
+
 /* Your custom JavaScript here */
 
 function load_customers(infunction){

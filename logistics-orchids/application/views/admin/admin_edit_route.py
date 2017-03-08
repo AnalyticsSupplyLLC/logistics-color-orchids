@@ -28,9 +28,11 @@ class AdminEditExample(View):
                 route.operator_pay=form.operator_pay.data
                 route.hotel_expenses=form.hotel_expenses.data
                 route.fuel_expenses=form.fuel_expenses.data
-                route.fuel_gallons=form.fuel_gallons.data
+                route.misc_expenses=form.misc_expenses.data
+                #route.fuel_gallons=form.fuel_gallons.data
                 route.total_miles=form.total_miles.data
-                route.total_hours=form.total_hours.data
+                route.route_id=form.route_id.data
+                #route.total_hours=form.total_hours.data
                 route.up_timestamp = datetime.now()
                 route.put()
                 flash(u'Route %s successfully saved.' % route_id, 'success')
@@ -53,12 +55,15 @@ class AdminEditStop(View):
                 stop.stop_dist=form.stop_dist.data
                 stop.stop_load=form.stop_load.data
                 stop.stop_pallets=form.stop_pallets.data
-                stop.stop_ret_carts=form.stop_ret_carts.data
+                #stop.stop_ret_carts=form.stop_ret_carts.data
+                stop.invoice_num=form.invoice_num.data
                 stop.stop_carts=form.stop_carts.data
                 stop.customer_cost=form.customer_cost.data
                 stop.up_timestamp=datetime.now()
                 stop.update_parent(stop.up_timestamp)
+                route.up_timestamp=datetime.now()
                 stop.put()
+                route.put()
                 flash(u'Stop %s successfully saved.' % stop_id, 'success')
                 return redirect(url_for('show_route',route_id=route.key.id()))
         return render_template('edit_stop.html', route=route,stop=stop, form=form)
@@ -96,14 +101,17 @@ class AdminShowExample(View):
                 stop_dist=form.stop_dist.data,
                 stop_load=form.stop_load.data,
                 stop_pallets=form.stop_pallets.data,
-                stop_ret_carts=form.stop_ret_carts.data,
+                #stop_ret_carts=form.stop_ret_carts.data,
                 stop_carts=form.stop_carts.data,
                 customer_cost=form.customer_cost.data,
+                invoice_num=form.invoice_num.data,
                 timestamp=datetime.now(),
                 up_timestamp=datetime.now(),
                 parent=route.key)
+            route.up_timestamp=datetime.now()
             try:
                 stop.put()
+                route.put()
                 stop_id = stop.key.id()
                 flash(u'Stop %s successfully added.' % stop_id, 'success')
                 return redirect(url_for('show_route',route_id=route.key.id(),form=form,stops=stops))

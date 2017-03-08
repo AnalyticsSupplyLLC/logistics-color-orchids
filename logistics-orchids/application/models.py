@@ -165,10 +165,18 @@ class RouteEntryMain(NDBBase):
     operator_pay = ndb.FloatProperty(required=True)
     hotel_expenses = ndb.FloatProperty(required=False)
     fuel_expenses = ndb.FloatProperty(required=False)
-    fuel_gallons = ndb.FloatProperty(required=False)
-    total_miles = ndb.FloatProperty(required=False)
-    total_hours = ndb.FloatProperty(required=False)
     
+    misc_expenses = ndb.FloatProperty()
+    #fuel_gallons = ndb.FloatProperty(required=False)
+    total_miles = ndb.FloatProperty(required=False)
+    #total_hours = ndb.FloatProperty(required=False)
+    route_id = ndb.StringProperty()
+    
+    def get_route_id(self):
+        if not self.route_id or self.route_id == "":
+            return self.route_date_start.strftime('%m/%d/%Y')+"_"+self.operator_name
+        return self.route_id
+        
     @property
     def stops(self):
         return RouteStops.query(ancestor=self.key).fetch()
@@ -176,8 +184,19 @@ class RouteEntryMain(NDBBase):
     @classmethod
     def get_by_date(cls, from_date):
         fromDate = from_date - timedelta(days=.1)
+        print("Pulling all updates from this time: "+str(fromDate))
         qry = RouteEntryMain.query(RouteEntryMain.up_timestamp >= fromDate)
         return qry.fetch()
+    
+    @classmethod
+    def switch_to_misc(cls):
+        qry = RouteEntryMain.query()
+        update_list = []
+        for route in qry:
+            route.misc_expenses = route.hotel_expenses + route.fuel_expenses
+            route.put()
+            update_list.append({'id':route.id,'misc_expenses':route.misc_expenses,'status':'COMPLETE'})
+        return update_list
     
     def default_nulls(self):
         if not self.operator_pay:
@@ -238,9 +257,11 @@ class RouteStops(NDBBase):
     stop_dist = ndb.IntegerProperty(required=True)
     stop_load = ndb.IntegerProperty(required=True)
     stop_pallets = ndb.IntegerProperty()
-    stop_ret_carts = ndb.IntegerProperty()
+    
+    #stop_ret_carts = ndb.IntegerProperty()
     stop_carts = ndb.IntegerProperty()
     customer_cost = ndb.FloatProperty(required=False)
+    invoice_num = ndb.StringProperty()
     
     percent = None
     parent = None
@@ -304,8 +325,13 @@ class RouteStops(NDBBase):
         self.check_parent_percent()
         return self.parent.fuel_expenses * self.percent
     
+    def get_misc_expenses(self):
+        self.check_parent_percent()
+        return self.parent.misc_expenses * self.percent
+    
     def get_trip_expenses(self):
-        return self.get_operator_pay() + self.get_hotel_expenses() + self.get_fuel_expenses()
+        #return self.get_operator_pay() + self.get_hotel_expenses() + self.get_fuel_expenses()
+        return self.get_operator_pay() + self.get_misc_expenses()
     
     def get_cost_per_mile(self):
         return self.get_trip_expenses() / self.get_miles()
@@ -337,10 +363,10 @@ class RouteStops(NDBBase):
         return tot/float(maxNumber)
     
     def get_stop_summary(self):
-        metrics = ['_id','route_start_date','route_end_date','hotel_expenses','fuel_expenses','fuel_gallons','total_miles','total_hours',
+        metrics = ['_id','route_id','route_start_date','route_end_date','misc_expenses','total_miles',
                    'operator_name','operator_pay','customer_name','ship_to','customer_zip','miles_from_company','customer_cost',
-                   'percent_load','pallets','carts','returned_carts','percent_of_total','stop_miles','stop_hours','stop_fuel_gallons',
-                   'stop_operator_pay','stop_hotel','stop_fuel','percent_freight','fuel_rate','cost_per_mile','revenue_per_mile']
+                   'percent_load','pallets','carts','returned_carts','percent_of_total','stop_miles','invoice_num',
+                   'stop_operator_pay','stop_misc','percent_freight','cost_per_mile','revenue_per_mile']
         
         calcs = self.get_calculations()
         pd = self.parent.to_dict()
@@ -349,6 +375,7 @@ class RouteStops(NDBBase):
         #pd['route_date_end'] = pd['route_date_end'].strftime('%m/%d/%Y')
         
         pd['_id'] = str(self.parent.id) + "_" + str(self.id) 
+        pd['route_id'] = self.parent.get_route_id()
         
         for key in pd.keys():
             calcs[key] = pd[key]
@@ -376,13 +403,14 @@ class RouteStops(NDBBase):
         d = {'percent_of_total':self.get_percent_total()}
         d['percent_load'] = self.get_percent_load()
         d['stop_miles'] = self.get_miles()
-        d['stop_hours'] = self.get_hours()
-        d['stop_fuel_gallons'] = self.get_fuel_gallons()
+        #d['stop_hours'] = self.get_hours()
+        #d['stop_fuel_gallons'] = self.get_fuel_gallons()
         d['stop_operator_pay'] = self.get_operator_pay()
-        d['stop_hotel'] = self.get_hotel_expenses()
-        d['stop_fuel'] = self.get_fuel_expenses()
+        #d['stop_hotel'] = self.get_hotel_expenses()
+        #d['stop_fuel'] = self.get_fuel_expenses()
+        d['stop_misc'] = self.get_misc_expenses()
         d['percent_freight'] = self.get_percent_freight()
-        d['fuel_rate'] = self.get_fuel_rate()
+        #d['fuel_rate'] = self.get_fuel_rate()
         d['cost_per_mile'] = self.get_cost_per_mile()
         d['revenue_per_mile'] = self.get_revenue_per_mile()
         
@@ -398,7 +426,7 @@ class RouteStops(NDBBase):
         d['stop_dist'] = 'miles_from_company'
         d['stop_pallets'] = 'pallets'
         d['stop_carts'] = 'carts'
-        d['stop_ret_carts'] = 'returned_carts'
+        #d['stop_ret_carts'] = 'returned_carts'
         return d
         
         

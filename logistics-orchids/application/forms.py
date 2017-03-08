@@ -43,9 +43,12 @@ StopForm = model_form(RouteStops, FlaskForm, field_args={
     'stop_ship_to': dict(validators=[DataRequired()],label='Ship To'),
     'stop_load': dict(validators=[DataRequired()],label='Percent Load'),
     'stop_name':dict(label='Name'),'stop_zip':dict(label='Zip Code'),
-    'stop_dist':dict(label='Distance'),'stop_pallets':dict(label='Num Pallets')
-    ,'customer_cost':dict(label='Revenue'),
-    'stop_ret_carts':dict(label='Num Return Carts'),'stop_carts':dict(label='Num Carts')})
+    'stop_dist':dict(label='Distance'),
+    'stop_pallets':dict(label='Num Pallets'),
+    'customer_cost':dict(label='Revenue'),
+    #'stop_ret_carts':dict(label='Num Return Carts'),
+    'invoice_num':dict(label='Sales Order #'),
+    'stop_carts':dict(label='Num Carts')})
 
 def get_db_form():
     dbform = model_form(DBEntry, FlaskForm, field_args={

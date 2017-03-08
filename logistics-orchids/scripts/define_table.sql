@@ -14,13 +14,11 @@ DROP TABLE IF EXISTS `logistics_stop`;
 		
 CREATE TABLE `logistics_stop` (
   `id` VARCHAR(200) NOT NULL DEFAULT 'NULL' COMMENT 'This is a combination of the routeMain and routeStop ids',
+  `route_id` VARCHAR(200) NULL DEFAULT NULL,
   `route_start_date` DATE NULL,
   `route_end_date` DATE NULL,
-  `hotel_expenses` DECIMAL(10,5) NULL DEFAULT NULL,
-  `fuel_expenses` INTEGER NULL DEFAULT NULL,
-  `fuel_gallons` INTEGER NULL DEFAULT NULL,
+  `misc_expenses` INTEGER NULL DEFAULT NULL,
   `total_miles` INTEGER NULL DEFAULT NULL,
-  `total_hours` INTEGER NULL DEFAULT NULL,
   `operator_name` VARCHAR(300) NULL DEFAULT NULL,
   `operator_pay` INTEGER NULL DEFAULT NULL,
   `customer_name` VARCHAR(300) NULL DEFAULT NULL,
@@ -31,18 +29,14 @@ CREATE TABLE `logistics_stop` (
   `percent_load` DECIMAL(10,5) NULL DEFAULT NULL,
   `pallets` INTEGER NULL DEFAULT NULL,
   `carts` INTEGER NULL DEFAULT NULL,
-  `returned_carts` INTEGER NULL DEFAULT NULL,
-  `percent_of_total` INTEGER NULL DEFAULT NULL COMMENT 'This should be the miles from company divided by the total m',
+  `percent_of_total` DECIMAL(10,5) NULL DEFAULT NULL COMMENT 'This should be the miles from company divided by the total m',
   `stop_miles` DECIMAL(10,5) NULL DEFAULT NULL,
-  `stop_hours` DECIMAL(10,5) NULL DEFAULT NULL,
-  `stop_fuel_gallons` DECIMAL(10,5) NULL DEFAULT NULL,
   `stop_operator_pay` DECIMAL(10,5) NULL DEFAULT NULL,
-  `stop_hotel` DECIMAL(10,5) NULL DEFAULT NULL,
-  `stop_fuel` INTEGER NULL DEFAULT NULL,
+  `stop_misc` DECIMAL(10,5) NULL DEFAULT NULL,
   `percent_freight` DECIMAL(10,5) NULL DEFAULT NULL,
-  `fuel_rate` DECIMAL(10,5) NULL DEFAULT NULL,
   `cost_per_mile` DECIMAL(10,5) NULL DEFAULT NULL,
   `revenue_per_mile` DECIMAL(10,5) NULL DEFAULT NULL,
+  `invoice_num` VARCHAR(200) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) COMMENT 'This is the table that will hold each stop along the way for';
 

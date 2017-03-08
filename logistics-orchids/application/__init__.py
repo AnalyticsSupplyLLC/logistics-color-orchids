@@ -9,7 +9,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.debug import DebuggedApplication
 from flask_sqlalchemy import SQLAlchemy
 from models import DBEntry
-from application.decorators import login_required
+from application.decorators import login_required, admin_required
 
 app = Flask('application')
 
@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 
 from database import store_route_stop, update_all_by_ndb
 from initialize import init_customer_location
-from models import Customer
+from models import Customer,RouteEntryMain
 
 if os.getenv('FLASK_CONF') == 'TEST':
     app.config.from_object('application.settings.Testing')
@@ -84,6 +84,17 @@ def get_locations(cust_id):
     try:
         locs = Customer.get_locations(cust_id)
         return jsonify(locs)
+    except Exception:
+        msg = traceback.format_exc()
+        print(msg)
+        return jsonify({"problem":msg})
+
+@app.route('/convert_expenses',methods=['GET'])
+@admin_required
+def convert_expenses():
+    try:
+        upd = RouteEntryMain.switch_to_misc()
+        return jsonify({'result':'success','msg':upd})
     except Exception:
         msg = traceback.format_exc()
         print(msg)
