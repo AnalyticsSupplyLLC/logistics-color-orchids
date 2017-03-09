@@ -334,9 +334,13 @@ class RouteStops(NDBBase):
         return self.get_operator_pay() + self.get_misc_expenses()
     
     def get_cost_per_mile(self):
+        if not self.get_miles() or self.get_miles() == 0:
+            return 0
         return self.get_trip_expenses() / self.get_miles()
     
     def get_revenue_per_mile(self):
+        if not self.get_miles() or self.get_miles() == 0:
+            return 0
         return self.customer_cost / self.get_miles()
     
     def get_percent_freight(self):
