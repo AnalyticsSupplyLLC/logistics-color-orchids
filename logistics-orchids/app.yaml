@@ -44,3 +44,7 @@ handlers:
 
 - url: .*
   script: run.application.app
+  
+- url: /syncdw
+  script: run.application.app
+  login: admin

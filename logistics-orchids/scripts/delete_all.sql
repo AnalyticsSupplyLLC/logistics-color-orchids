@@ -1,1 +1,1 @@
-delete from logistics.logistics_stop;
+delete from logistics_stop;
