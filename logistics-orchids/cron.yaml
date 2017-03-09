@@ -1,0 +1,4 @@
+cron:
+- description: "sync datastore to google SQL"
+  url: /syncdw
+  schedule: every 10 mins
