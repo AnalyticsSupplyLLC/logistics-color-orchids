@@ -14,7 +14,7 @@ from application.views.public.public_say_hello import PublicSayHello
 
 from application.views.admin.admin_list_routes import AdminListExamples
 #from application.views.admin.admin_list_examples_cached import AdminListExamplesCached
-from application.views.admin.admin_secret import AdminSecret
+from application.views.admin.admin_secret import AdminSecret, AdminUpdate, AdminCustomerUpdate
 from application.views.admin.admin_edit_route import AdminEditExample, AdminShowExample, AdminEditStop, AdminDeleteStop
 from application.views.admin.admin_delete_route import AdminDeleteExample
 from application.views.admin.add_db_entry import AdminAddDBEntry
@@ -47,6 +47,9 @@ app.add_url_rule('/stops/<int:route_id>/<int:stop_id>/edit', 'edit_stop', view_f
 app.add_url_rule('/stops/<int:route_id>/<int:stop_id>/delete','delete_stop', view_func=AdminDeleteStop.as_view('delete_stop'),methods=['GET','POST'])
 
 app.add_url_rule('/dbentry','db_entry',view_func=AdminAddDBEntry.as_view('db_entry'),methods=['GET','POST'])
+
+app.add_url_rule('/admin_update', 'admin_update',view_func=AdminUpdate.as_view('admin_update'), methods=['GET','POST'])
+app.add_url_rule('/Customer/<int:customer_id>','admin_customer',view_func=AdminCustomerUpdate.as_view('admin_customer'), methods=['GET','POST'])
 # Error handlers
 
 # Handle 404 errors

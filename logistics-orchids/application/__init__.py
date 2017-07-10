@@ -2,7 +2,7 @@
 Initialize Flask app
 
 """
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, make_response
 import os
 import traceback
 from flask_debugtoolbar import DebugToolbarExtension
@@ -10,6 +10,7 @@ from werkzeug.debug import DebuggedApplication
 from flask_sqlalchemy import SQLAlchemy
 from models import DBEntry
 from application.decorators import login_required, admin_required
+from application.models import Operator
 
 app = Flask('application')
 
@@ -19,7 +20,7 @@ db = SQLAlchemy(app)
 
 from database import store_route_stop, update_all_by_ndb
 from initialize import init_customer_location
-from models import Customer,RouteEntryMain
+from models import Customer,RouteEntryMain,Operator
 
 if os.getenv('FLASK_CONF') == 'TEST':
     app.config.from_object('application.settings.Testing')
@@ -51,7 +52,12 @@ app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 # Pull in URL dispatch routes
 import urls
+import restful
 
+@app.route('/rest')
+@app.route('/rest/<path:path>/',methods=['DELETE', 'GET', 'GET_METADATA', 'POST', 'PUT'])
+def rest_impl(path):
+    return restful.process_rest_request(path, request,make_response())
 
 @app.route('/store-result/<int:route_main>/<int:route_entry>', methods=['GET'])
 def store_result(route_main,route_entry):
@@ -59,7 +65,6 @@ def store_result(route_main,route_entry):
     return jsonify({'result':'success'})
 
 @app.route('/syncdw', methods=['GET'])
-@login_required
 def sync_datawarehouse():
     update_all_by_ndb()
     return jsonify({'result':'success'})
@@ -100,6 +105,19 @@ def convert_expenses():
         print(msg)
         return jsonify({"problem":msg})
     
+@app.route('/update_info/<path:path>/',methods=['DELETE', 'GET', 'GET_METADATA', 'POST', 'PUT'])
+def get_update_info(path):
+    return restful.get_update_info(path)
+
+@app.route('/options/<path:path>/',methods=['GET'])
+def get_options(path):
+    r = restful.get_option_field(path, request.values)
+    return jsonify(r)
+
+@app.route('/add_operators',methods=['GET'])
+def add_op():
+    Operator.add_operators()
+    return jsonify({'msg':'success'})
 
 if __name__ == "__main__":
     app.run()

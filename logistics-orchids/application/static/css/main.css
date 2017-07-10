@@ -6,6 +6,18 @@
 .nowrap { white-space: nowrap; }
 
 /* Your customizations here */
+td.edit-cell{
+  background-color: #fff;
+}
+
+td.display-cell{
+  background-color: transparent;
+}
+
+.save_row{
+  display: none;
+}
+
 body {
     font-family: "Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 14px;

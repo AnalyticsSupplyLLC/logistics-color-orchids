@@ -1,0 +1,3 @@
+
+		
+alter TABLE `logistics_stop` add column update_ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;

@@ -9,6 +9,7 @@
     <script>
        window.onload = function() {
     	get_customers();
+    	get_companies();
        };
         var selected_name = '{{ stop.stop_name }}';
         var selected_stop = '{{ stop.stop_ship_to }}';
@@ -24,6 +25,32 @@
         		switch_cust();
         	}
         }
+        
+        function get_companies(){
+        	var names = [];
+        	names.push("Color Orchids");
+        	names.push("Fresh2o");
+        	changeToSelect(names);
+        }
+        
+        function changeToSelect(names) {
+      	  var origVal = $('#stop_company').val();
+      	  var opPar = $('#stop_company').parent();
+      	  $('#stop_company').remove();
+      	  opPar.append('<select name="stop_company" id="stop_company" type="text" value="1" class="form-control" ></select>');
+      	  var selFnd = false;
+      	  for (var i=0;i<names.length;i++){
+      		  if (names[i]==origVal){
+      			  $('#stop_company').append('<option value="'+names[i]+'" selected="selected">'+names[i]+'</option>');
+      			  selFnd = true;
+      		  }else{
+      			  $('#stop_company').append('<option value="'+names[i]+'">'+names[i]+'</option>');
+      		  }
+      	  }
+      	  if (!selFnd){
+      		  $('#stop_company').append('<option value="'+origVal+'" selected="selected">'+origVal+'</option>');
+      	  }
+      	}
         
         function get_cust_index(){
         	var arrayLength = customers.length;

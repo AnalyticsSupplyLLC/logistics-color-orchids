@@ -83,6 +83,7 @@ class RouteStop(db.Model):
     cost_per_mile = db.Column(db.String(80))
     revenue_per_mile = db.Column(db.String(80))
     invoice_num = db.Column(db.String(80))
+    update_ts = db.Column(db.DateTime)
     
     def update(self, route_id, route_start_date,route_end_date,misc_expenses,total_miles,
                  operator_name,operator_pay,customer_name,ship_to,customer_zip,miles_from_company,
@@ -118,6 +119,7 @@ class RouteStop(db.Model):
         self.cost_per_mile    =    cost_per_mile
         self.revenue_per_mile    =    revenue_per_mile
         self.invoice_num = invoice_num
+        self.update_ts = datetime.now()
 
     def __init__(self, _id,route_id, route_start_date,route_end_date,misc_expenses,total_miles,
                  operator_name,operator_pay,customer_name,ship_to,customer_zip,miles_from_company,
@@ -154,3 +156,4 @@ class RouteStop(db.Model):
         self.cost_per_mile    =    cost_per_mile
         self.revenue_per_mile    =    revenue_per_mile
         self.invoice_num = invoice_num
+        self.update_ts = datetime.now()

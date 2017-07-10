@@ -71,7 +71,16 @@ class DBEntry(ndb.Model):
             print(dburl)
             return dburl.format(dbe.conn_pass)
         else:
-            return ""
+            db = DBEntry()
+            db.conn_database = "x"
+            db.conn_host = "x"
+            db.conn_name = dbtype
+            db.conn_pass = "x"
+            db.conn_port = "x"
+            db.conn_string = "x"
+            db.conn_user = "x"
+            db.put()
+            return db
     
     
     
@@ -156,6 +165,31 @@ class Location(NDBBase):
         loc.milesFromCompany = miles
         loc.customer = cust_key
         loc.put()
+
+class Operator(NDBBase):
+    operator_name = ndb.StringProperty(required=True)
+    operator_other = ndb.StringProperty(default="")
+    
+    @classmethod
+    def add_operators(cls):
+        op_arr = ['Paculua','American',
+                  'Becker','Bell','CH Robin.','Comstock',
+                  'Jackson','MJ Transp.','Peninsula','Pennys',
+                  'Polo','R & K','Spiece','TJ Demarlo','Todd Smith','TQL']
+        operators = Operator.query()
+        cnt = 0
+        for _ in operators:
+            cnt = cnt + 1
+            
+        if cnt == 0:
+            for op in op_arr:
+                o = Operator()
+                o.operator_name = op
+                o.operator_other = ""
+                o.put()
+            
+            
+            
     
 class RouteEntryMain(NDBBase):
     """Route Model"""
@@ -183,7 +217,7 @@ class RouteEntryMain(NDBBase):
     
     @classmethod
     def get_by_date(cls, from_date):
-        fromDate = from_date - timedelta(days=.1)
+        fromDate = from_date - timedelta(days=1)
         print("Pulling all updates from this time: "+str(fromDate))
         qry = RouteEntryMain.query(RouteEntryMain.up_timestamp >= fromDate)
         return qry.fetch()
@@ -262,6 +296,8 @@ class RouteStops(NDBBase):
     stop_carts = ndb.IntegerProperty()
     customer_cost = ndb.FloatProperty(required=False)
     invoice_num = ndb.StringProperty()
+    
+    stop_company = ndb.StringProperty(default="Color Orchids")
     
     percent = None
     parent = None
@@ -432,7 +468,24 @@ class RouteStops(NDBBase):
         d['stop_carts'] = 'carts'
         #d['stop_ret_carts'] = 'returned_carts'
         return d
-        
+
+class UserModel(ndb.Model):
+    username = ndb.StringProperty(required=True)
+    pw_hash = ndb.StringProperty(required=True)        
+
+class User:
+    pw_hash = None
+    username = None
+    
+    def __init__(self, user, pw):
+        self.username = user
+        self.set_password(pw)
+
+    def set_password(self, password):
+        self.pw_hash = generate_password_hash(password)
+
+    def get_model(self):
+        return UserModel(username=self.username, pw_hash=self.pw_hash)
         
         
             

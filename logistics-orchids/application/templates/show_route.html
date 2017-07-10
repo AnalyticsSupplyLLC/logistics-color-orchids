@@ -69,6 +69,7 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
+                <th>Company</th>
                 <th>Stop Name</th>
                 <th>Ship To</th>
                 <th>Zip Code</th>
@@ -88,6 +89,7 @@
             {% for stop in stops %}
             {% set stop_id = stop.key.id() %}
             <tr>
+                <td>{{ stop.stop_company }}</td>
                 <td>{{ stop.stop_name }}</td>
                 <td>{{ stop.stop_ship_to }}</td>
                 <td>{{ stop.stop_zip }}</td>
@@ -134,12 +136,39 @@
     <script>
     function show_modal(m_id) {
     	get_customers();
+    	get_companies();
         $(m_id).modal('show');
     }
     
     var customers = [];
     var locations = {};
     var cur_location = {};
+    
+    function get_companies(){
+    	var names = [];
+    	names.push("Color Orchids");
+    	names.push("Fresh2o");
+    	changeToSelect(names);
+    }
+    
+    function changeToSelect(names) {
+  	  var origVal = $('#stop_company').val();
+  	  var opPar = $('#stop_company').parent();
+  	  $('#stop_company').remove();
+  	  opPar.append('<select name="stop_company" id="stop_company" type="text" value="1" class="form-control" ></select>');
+  	  var selFnd = false;
+  	  for (var i=0;i<names.length;i++){
+  		  if (names[i]==origVal){
+  			  $('#stop_company').append('<option value="'+names[i]+'" selected="selected">'+names[i]+'</option>');
+  			  selFnd = true;
+  		  }else{
+  			  $('#stop_company').append('<option value="'+names[i]+'">'+names[i]+'</option>');
+  		  }
+  	  }
+  	  if (!selFnd){
+  		  $('#stop_company').append('<option value="'+origVal+'" selected="selected">'+origVal+'</option>');
+  	  }
+  	}
     
     function get_customers(){
     	if (customers.length == 0){

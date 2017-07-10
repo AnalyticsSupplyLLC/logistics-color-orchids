@@ -42,9 +42,9 @@ handlers:
 - url: /static
   static_dir: application/static
 
-- url: .*
-  script: run.application.app
-  
 - url: /syncdw
   script: run.application.app
   login: admin
+
+- url: /.*
+  script: run.application.app

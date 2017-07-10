@@ -7,6 +7,9 @@
 {% endblock content %}
 {% block tail_script %}
     <script>
+    $(document).ready(function() {
+    	get_operators();
+    });
         $( function() {
             $( "#route_date_start" ).datepicker({
             	  dateFormat: "yy-mm-dd"
@@ -15,6 +18,43 @@
             $( "#route_date_end" ).datepicker({
             	  dateFormat: "yy-mm-dd"
             });});
+        
+        function get_operators(){
+        	$.ajax({
+        		url:"/rest/operator",
+        		dataType: "json",
+        		success: function(data){
+        			var names = [];
+        			for (var i=0;i<data.list.operator.length;i++){
+        				names.push(data.list.operator[i].operator_name);
+        			}
+        			names.sort();
+        			changeToSelect(names);
+        		},
+        		error: function(data){
+        			console.log(data);
+        		}
+        	});
+        }
+        
+        function changeToSelect(names) {
+        	  var origVal = $('#operator_name').val();
+        	  var opPar = $('#operator_name').parent();
+        	  $('#operator_name').remove();
+        	  opPar.append('<select name="operator_name" id="operator_name" type="text" value="1" class="form-control" ></select>');
+        	  var selFnd = false;
+        	  for (var i=0;i<names.length;i++){
+        		  if (names[i]==origVal){
+        			  $('#operator_name').append('<option value="'+names[i]+'" selected="selected">'+names[i]+'</option>');
+        			  selFnd = true;
+        		  }else{
+        			  $('#operator_name').append('<option value="'+names[i]+'">'+names[i]+'</option>');
+        		  }
+        	  }
+        	  if (!selFnd){
+        		  $('#operator_name').append('<option value="'+origVal+'" selected="selected">'+origVal+'</option>');
+        	  }
+        	}
         $('#fuel_expenses').parent().hide();
         $('#hotel_expenses').parent().hide();
     </script>

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Select Update Category</h3>
+     <select id='update-select' class="form-control">
+       {% for model in models %}
+         <option>{{ model }}</option>
+       {% endfor %}
+     </select>
+     <div id='update_area' class='container'>
+        <div id='update_action' >
+        <a class="btn btn-primary" onclick='add_entry()'>
+            <i class="icon-plus-sign icon-white"></i>
+            Add
+        </a>
+        </div>
+     </div>
+{% endblock content %}
+{% block tail_script %}
+<script>
+var uInfo = {};
+var model_name = "";
+var old_model = "";
+var model_options = {}
+
+$(document).ready(function() {
+    $('#update-select').change(function(){
+    	process_selection();
+    });
+    var fadd = add_buttons;
+    add_buttons = function(rowId, model_name, td_node){
+    	fadd.apply(this,arguments);
+    	if (model_name == 'customer'){
+    	  add_locations_button(rowId, model_name, td_node);
+    	}
+    }
+    
+    var c = convert_save;
+    
+    convert_save = function(old_id, new_id, model_name){
+    	c.apply(this,arguments);
+    	if (model_name == 'customer'){
+    	  go_to_window('Customer', new_id);
+    	}
+    }
+    process_selection();
+} );
+
+function add_entry(){
+	var data = {service_name: model_name};
+	addRowDT2(model_name,model_options[model_name],uInfo.fields,data,uInfo.order,false,model_name+'-table');
+}
+
+function process_selection(){
+	var opt = $('#update-select option:selected').text();
+	get_update_info(opt);
+	old_model = model_name;
+	model_name = opt.toLowerCase();
+}
+
+function edit_row(rowId, modName){
+	editRow(rowId,model_options[model_name],uInfo.fields);
+}
+
+function save_row(rowId, modName){
+	var data = {service_name: 'rest/'+model_name+"/"+rowId+"/"};
+    saveRowDT2(rowId,model_options[model_name],uInfo.fields,data,uInfo.order,model_name,model_name+'-table');
+    
+    //add_locations_button(rowId)
+}
+
+function add_locations_button(rowId, model_name, td_node){
+	var td_node = d3.select('[id="'+rowId+"_buttons"+'"]');
+	td_node.append('a')
+	       .attr('class','btn btn-primary location_btn')
+	       .attr('id',rowId+"_location")
+	       .on('click',function(){
+	    	   go_to_window('Customer',rowId);
+	       })
+	       .text('Locations');
+}
+
+function adjust_data(inData){
+	var retData = {};
+	retData[model_name] = {key:inData['id']};
+	for (var i=0;i<uInfo.order.length;i++){
+		retData[model_name][uInfo.order[i]] = inData[uInfo.order[i]];
+	}
+	return retData;
+}
+
+function del_row(rowId, model_name){
+	
+}
+
+function add_table(update_info, update_name){
+	    var old_tableId = old_model+"-table";
+	    var tableId = model_name+"-table";
+	    uInfo = update_info;
+		if (d3.select('[id="'+old_tableId+'"]').empty() == false){
+			d3.select('[id="'+old_tableId	+'_wrapper"]').remove();
+		}
+		var tbl = d3.select('[id="update_area"]').append('table');
+		tbl.attr('id',tableId);
+		tbl.attr('class','table table-sm table-bordered');
+		var row = tbl.append('thead').append('tr');
+		for (var i=0;i<update_info.order.length;i++){
+			row.append('th').text(update_info.order[i]);
+		}
+		row.append('th').text(" -- action -- ");
+		$('#'+tableId).DataTable( {"scrollY":"600px","scrollCollapse": true,"paging":false} );
+}
+
+function add_data(data_arr, update_info, update_name){
+	var model_name = update_name.toLowerCase();
+    var tableId = model_name+"-table";
+	var dt = $('#'+tableId).dataTable();
+	for (var j=0;j<data_arr.length;j++){
+		var element = data_arr[j];
+		add_element(element, update_info, update_name,model_name, dt);
+	}
+	//dt.draw();
+}
+
+function add_element(element,update_info, update_name, model_name, dt){
+	var dt_row = [];
+	for (var i=0;i<update_info.order.length;i++){
+		var field = update_info.order[i];
+		var value = "";
+		if (element.hasOwnProperty(field)){
+			value = element[field];
+		}
+		dt_row.push(value);
+	}
+	dt_row.push(""); // for the action column
+	var addid = dt.fnAddData(dt_row);
+	var row = dt.fnGetNodes(addid);
+	$(row).attr('id',element['key']);
+	var children = $(row).children();
+	for (var i=0;i<children.length;i++){
+		var child = children[i];
+		if (i < update_info.order.length){
+			$(child).attr('id',element['key']+"_"+update_info.order[i]);	
+		} else {
+			// action column
+			var cellId = element['key'] + "_buttons";
+			$(child).attr('id',cellId);
+			add_buttons(element['key'], model_name, d3.select('[id="'+cellId+'"]'));
+			if (update_info.style == "new_screen"){
+				d3.select('[id="'+element['key']+"_edit"+'"]')
+				  .on('click',function(){
+					  go_to_window(update_name,element['key']);
+				  });
+			}
+			//add_locations_button(element['key'])
+		}
+		
+	}
+}
+
+function go_to_window(model_name, rowId){
+	//set_message(rowId+" clicked");  //Just testing... no need to implement
+	window.location='/'+model_name+'/'+rowId;
+}
+
+function get_model_data(update_name,update_info){
+	$.ajax({
+		url:"/rest/"+update_name.toLowerCase(),
+		dataType: "json",
+		success: function(data){
+			console.log(data);
+			add_data(data.list[update_name.toLowerCase()],update_info,update_name);
+		},
+		error: function(data){
+			console.log(data);
+		}
+	});
+}
+
+function add_options(model_name, field_name, options)
+{
+	model_options[model_name][field_name] = []
+    for (var i = 0; i<options.values.length;i++){
+ 		model_options[model_name][field_name].push(options.values[i]['value']+":"+options.values[i]['key']);   	
+    }
+}
+
+function get_update_info(update_name){
+	$.ajax({
+		//type: "GET",
+		url: "/update_info/"+update_name,
+		dataType: "json",
+		success: function(data){
+			if (data.status == 'success'){
+				console.log(data.payload);
+				model_options[update_name.toLowerCase()] = {}
+				if (data.payload.options.length > 0){
+					for (var i=0;i<data.payload.options.length;i++){
+						var m = update_name.toLowerCase();
+						var f = data.payload.options[i]['field_name'];
+						var o = data.payload.options[i]['option_name'];
+						get_option_data(m,f,o,add_options);
+					}
+				}
+				add_table(data.payload, update_name);
+				get_model_data(update_name,data.payload);
+			}else{
+				alert(data.message);
+			}
+
+	     },
+	     error: function(data){
+		        console.log(data.responseText);
+		        //alert(json.error);},
+		    },
+		    failure: function(data){
+		        console.log(data.responseText);
+		        //alert(json.error);
+		        }
+	})
+}
+</script>
+{% endblock tail_script %}

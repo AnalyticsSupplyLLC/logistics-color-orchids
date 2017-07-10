@@ -96,34 +96,44 @@
             	  dateFormat: "yy-mm-dd"
             });});
         function show_modal() {
-        	changeToSelect();
+        	get_operators();
             $('.modal').modal('show');
         }
         
         $('#fuel_expenses').parent().hide();
+        $('#fuel_expenses').val(0);
         $('#hotel_expenses').parent().hide();
+        $('#hotel_expenses').val(0);
         
-        function changeToSelect() {
+        function get_operators(){
+        	$.ajax({
+        		url:"/rest/operator",
+        		dataType: "json",
+        		success: function(data){
+        			var names = [];
+        			for (var i=0;i<data.list.operator.length;i++){
+        				names.push(data.list.operator[i].operator_name);
+        			}
+        			names.sort();
+        			changeToSelect(names);
+        		},
+        		error: function(data){
+        			console.log(data);
+        		}
+        	});
+        }
+        
+        function changeToSelect(names) {
         	  var opPar = $('#operator_name').parent();
         	  $('#operator_name').remove();
         	  opPar.append('<select name="operator_name" id="operator_name" type="text" value="1" class="form-control" ></select>');
-        	  $('#operator_name').append('<option value="Paculua" selected="selected">Paculua</option>');
-        	  $('#operator_name').append('<option value="American">American</option>');
-        	  $('#operator_name').append('<option value="Becker">Becker</option>');
-        	  $('#operator_name').append('<option value="Bell">Bell</option>');
-        	  $('#operator_name').append('<option value="CH Robin.">CH Robin.</option>');
-        	  $('#operator_name').append('<option value="Comstock">Comstock</option>');
-        	  $('#operator_name').append('<option value="Jackson">Jackson</option>');
-        	  $('#operator_name').append('<option value="MJ Transp.">MJ Transp.</option>');
-        	  $('#operator_name').append('<option value="Peninsula">Peninsula</option>');
-        	  $('#operator_name').append('<option value="Pennys">Pennys</option>');
-        	  $('#operator_name').append('<option value="Polo">Polo</option>');
-        	  $('#operator_name').append('<option value="R & K">R & K</option>');
-        	  $('#operator_name').append('<option value="Spiece">Spiece</option>');
-        	  $('#operator_name').append('<option value="TJ Demarlo">TJ Demarlo</option>');
-        	  $('#operator_name').append('<option value="Todd Smith">Todd Smith</option>');
-        	  $('#operator_name').append('<option value="TQL">TQL</option>');
-
+        	  for (var i=0;i<names.length;i++){
+        		  if (i==0){
+        			  $('#operator_name').append('<option value="'+names[i]+'" selected="selected">'+names[i]+'</option>');
+        		  }else{
+        			  $('#operator_name').append('<option value="'+names[i]+'">'+names[i]+'</option>');
+        		  }
+        	  }
         	}
     </script>
 {% endblock tail_script %}

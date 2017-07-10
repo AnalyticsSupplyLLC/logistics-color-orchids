@@ -59,6 +59,7 @@ class AdminEditStop(View):
                 stop.invoice_num=form.invoice_num.data
                 stop.stop_carts=form.stop_carts.data
                 stop.customer_cost=form.customer_cost.data
+                stop.stop_company = form.stop_company.data
                 stop.up_timestamp=datetime.now()
                 stop.update_parent(stop.up_timestamp)
                 route.up_timestamp=datetime.now()
@@ -103,6 +104,7 @@ class AdminShowExample(View):
                 stop_pallets=form.stop_pallets.data,
                 #stop_ret_carts=form.stop_ret_carts.data,
                 stop_carts=form.stop_carts.data,
+                stop_company=form.stop_company.data,
                 customer_cost=form.customer_cost.data,
                 invoice_num=form.invoice_num.data,
                 timestamp=datetime.now(),
