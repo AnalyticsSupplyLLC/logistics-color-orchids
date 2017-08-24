@@ -26,6 +26,12 @@ def update_all_by_date2(fromDate):
     for route in routes:
         print("Updating Route: "+str(route.id))
         store_route_class(route)
+        
+def update_all():
+    routes = RouteEntryMain.query()
+    for route in routes:
+        print("Updating Route: "+str(route.id))
+        store_route_class(route)
 
 def store_route(route_id):
     route = RouteEntryMain.get_by_id(route_id)
@@ -84,11 +90,13 @@ class RouteStop(db.Model):
     revenue_per_mile = db.Column(db.String(80))
     invoice_num = db.Column(db.String(80))
     update_ts = db.Column(db.DateTime)
+    stop_companry = db.Column(db.String(80))
+
     
     def update(self, route_id, route_start_date,route_end_date,misc_expenses,total_miles,
                  operator_name,operator_pay,customer_name,ship_to,customer_zip,miles_from_company,
                  customer_cost,percent_load,pallets,carts,percent_of_total,stop_miles,
-                 stop_operator_pay,stop_misc,percent_freight,cost_per_mile,revenue_per_mile,invoice_num):
+                 stop_operator_pay,stop_misc,stop_company,percent_freight,cost_per_mile,revenue_per_mile,invoice_num):
         self.route_id = route_id
         self.route_start_date    =    route_start_date
         self.route_end_date    =    route_end_date
@@ -120,11 +128,12 @@ class RouteStop(db.Model):
         self.revenue_per_mile    =    revenue_per_mile
         self.invoice_num = invoice_num
         self.update_ts = datetime.now()
+        self.stop_companry = stop_company
 
     def __init__(self, _id,route_id, route_start_date,route_end_date,misc_expenses,total_miles,
                  operator_name,operator_pay,customer_name,ship_to,customer_zip,miles_from_company,
                  customer_cost,percent_load,pallets,carts,percent_of_total,stop_miles,
-                 stop_operator_pay,stop_misc,percent_freight,cost_per_mile,revenue_per_mile,invoice_num):
+                 stop_operator_pay,stop_misc,stop_company,percent_freight,cost_per_mile,revenue_per_mile,invoice_num):
         self.id    =    _id
         self.route_id = route_id
         self.route_start_date    =    route_start_date
@@ -157,3 +166,4 @@ class RouteStop(db.Model):
         self.revenue_per_mile    =    revenue_per_mile
         self.invoice_num = invoice_num
         self.update_ts = datetime.now()
+        self.stop_companry = stop_company

@@ -45,6 +45,14 @@ handlers:
 - url: /syncdw
   script: run.application.app
   login: admin
+  
+- url: /push_dw
+  script: run.application.app
+  login: admin
+  
+- url: /run_dw_task
+  script: run.application.app
+  login: admin
 
 - url: /.*
   script: run.application.app

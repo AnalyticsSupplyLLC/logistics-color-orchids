@@ -1,4 +1,4 @@
 cron:
 - description: "sync datastore to google SQL"
-  url: /syncdw
+  url: /push_dw?task=syncdw&process=none
   schedule: every 4 hours from 8:00 to 20:00

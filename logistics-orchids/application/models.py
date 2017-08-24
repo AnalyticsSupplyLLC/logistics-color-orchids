@@ -406,7 +406,7 @@ class RouteStops(NDBBase):
         metrics = ['_id','route_id','route_start_date','route_end_date','misc_expenses','total_miles',
                    'operator_name','operator_pay','customer_name','ship_to','customer_zip','miles_from_company','customer_cost',
                    'percent_load','pallets','carts','returned_carts','percent_of_total','stop_miles','invoice_num',
-                   'stop_operator_pay','stop_misc','percent_freight','cost_per_mile','revenue_per_mile']
+                   'stop_operator_pay','stop_misc','stop_company','percent_freight','cost_per_mile','revenue_per_mile']
         
         calcs = self.get_calculations()
         pd = self.parent.to_dict()

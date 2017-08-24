@@ -33,6 +33,7 @@ CREATE TABLE `logistics_stop` (
   `stop_miles` DECIMAL(10,5) NULL DEFAULT NULL,
   `stop_operator_pay` DECIMAL(10,5) NULL DEFAULT NULL,
   `stop_misc` DECIMAL(10,5) NULL DEFAULT NULL,
+  `stop_company` VARCHAR(100) NULL DEFAULT NULL,
   `percent_freight` DECIMAL(10,5) NULL DEFAULT NULL,
   `cost_per_mile` DECIMAL(10,5) NULL DEFAULT NULL,
   `revenue_per_mile` DECIMAL(10,5) NULL DEFAULT NULL,

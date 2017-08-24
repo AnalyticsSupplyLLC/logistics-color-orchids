@@ -3,8 +3,9 @@ Initialize Flask app
 
 """
 from flask import Flask, jsonify, request, make_response
-import os
+import os,sys
 import traceback
+import datetime
 from flask_debugtoolbar import DebugToolbarExtension
 from werkzeug.debug import DebuggedApplication
 from flask_sqlalchemy import SQLAlchemy
@@ -12,13 +13,15 @@ from models import DBEntry
 from application.decorators import login_required, admin_required
 from application.models import Operator
 
+from google.appengine.api.taskqueue import taskqueue
+
 app = Flask('application')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DBEntry.get_connection_string('Datawarehouse')
 db = SQLAlchemy(app)
 
 
-from database import store_route_stop, update_all_by_ndb
+from database import store_route_stop, update_all_by_ndb, update_all_by_date2, update_all
 from initialize import init_customer_location
 from models import Customer,RouteEntryMain,Operator
 
@@ -118,6 +121,37 @@ def get_options(path):
 def add_op():
     Operator.add_operators()
     return jsonify({'msg':'success'})
+
+@app.route('/push_dw',methods=['GET','POST'])
+def process_dw_task():
+    process_task = request.values.get("task")
+    process_step = request.values.get('process')
+    task = taskqueue.add(
+        url='/run_dw_task',
+        target='worker',
+        params={'task':process_task,'process':process_step})
+    
+    return jsonify({'task_name':task.name,'task_eta':task.eta})
+
+@app.route('/run_dw_task',methods=['POST','GET'])
+def run_dw_task():
+    runtask = request.values.get('task')
+    process = request.values.get("process") # either prep or run
+    
+    try:
+        if runtask == 'syncdw':
+            update_all_by_ndb()
+        elif runtask == 'syncdw_all':
+            update_all()
+        elif runtask == 'syncdw_date':
+            fromDate = datetime.datetime.strptime(process, '%m/%d/%Y')
+            update_all_by_date2(fromDate)
+            
+            return jsonify({"status":"success"})
+    except:
+        traceback.print_exc(file=sys.stdout)
+        print("Unexpected error:", sys.exc_info()[0])
+        return jsonify({"status":"failed"})
 
 if __name__ == "__main__":
     app.run()
